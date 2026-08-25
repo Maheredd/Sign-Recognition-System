@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Traffic Sign Recognition</title>
+    <style>
+      body {
+        background-color: #da7597;
+        color: black;
+        text-align: center;
+      }
+      img {
+        border: 2px solid black;
+      }
+      a {
+        color: black;
+        text-decoration: none;
+        font-size: 20px;
+        background-color: white;
+        padding: 0.5rem;
+        border-radius: 10px;
+      }
+      h1 {
+        color: white;
+        letter-spacing: 0.1rem;
+      }
+      form {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 0 auto;
+        width: 50%;
+      }
+      form button {
+        background-color: #da7597;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 20px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Upload an Image for Traffic Sign Recognition</h1>
+    <form action="/traffic_sign" method="post" enctype="multipart/form-data">
+      <div>
+        <input type="file" name="file" required />
+        <br /><br />
+        <button type="submit">Upload & Predict</button>
+      </div>
+      <div class="output">
+        {% if result %}
+        <h2>Prediction: {{ result }}</h2>
+        <img src="{{ image_path }}" width="300" />
+        {% endif %}
+      </div>
+    </form>
+
+    <br />
+    <a href="/">Back to Home</a>
+  </body>
+</html>
