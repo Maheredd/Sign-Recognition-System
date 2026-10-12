@@ -1,5 +1,6 @@
 # AI Sign Recognition Suite (v2.0)
 
+[![Repository](https://img.shields.io/badge/GitHub-Maheredd%2FSign--Recognition--System-181717.svg?logo=github)](https://github.com/Maheredd/Sign-Recognition-System)
 [![CI Pipeline](https://github.com/Maheredd/Sign-Recognition-System/actions/workflows/ci.yml/badge.svg)](https://github.com/Maheredd/Sign-Recognition-System/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![React 19](https://img.shields.io/badge/React-19.2.0-61dafb.svg)](https://react.dev/)
@@ -9,11 +10,23 @@
 
 An enterprise-grade, privacy-first Computer Vision suite for real-time **Hand Gesture Control**, **Indian Sign Language (ISL)** sentence translation with Text-to-Speech, and **German Traffic Sign (GTSRB)** 43-class recognition.
 
+**Official Repository:** [https://github.com/Maheredd/Sign-Recognition-System](https://github.com/Maheredd/Sign-Recognition-System)
+
+---
+
+## 🌟 Key Features
+
+- **🔒 Client-Side Edge Vision**: Raw video streams are processed directly in your browser using `@mediapipe/tasks-vision` WASM/WebGL. Only 21 normalized landmarks $(x, y, z)$ are transmitted to the backend—raw camera frames never leave your computer.
+- **🖐️ Hand Gesture Control**: 3D geometric invariant angle classifier unaffected by hand rotation or handedness (works equally on Left and Right hands). Includes sliding-window majority vote smoothing ($N=7$).
+- **✍️ ISL Sentence Builder & Speech**: Real-time Indian Sign Language detection with **Hold-to-Commit stabilization** (~750ms progress ring), text editor controls (Space, Backspace, Clear, Copy), and synthesized **Text-to-Speech (TTS)** via the Web Speech API.
+- **🚦 43-Class GTSRB Traffic Sign Vision**: Full coverage of all 43 German Traffic Sign classes. Features drag-and-drop image uploads, in-memory validation (no disk clutter), low-confidence alerts (< 60%), top-5 prediction distributions, and an interactive curated sample sign gallery.
+- **📊 Model Insights Dashboard (`/insights`)**: Visualizes empirical training convergence, categorical cross-entropy loss curves, per-class accuracies, and model architecture profiles with Recharts.
+- **🎮 ISL Learn Mode & Mini-Game (`/learn`)**: Interactive flashcard reference library for all 35 signs (digits 1–9, letters A–Z) paired with a real-time vision scoring game (*Match the Sign*) with streaks and celebration animations.
+- **⚡ Performance & Accessibility**: Custom leak-free pointer cursor with event delegation, capped Three.js DPR (1.5), background animations that pause when tabs are hidden, a dedicated "Reduce Effects" toggle, visible keyboard focus rings, and an English/Hindi language toggle.
+
 ---
 
 ## 🏗️ Architecture Overview
-
-The application utilizes a **client-side vision architecture**: raw webcam video is processed entirely in the browser using `@mediapipe/tasks-vision` WASM. Only lightweight 21-point normalized landmark coordinates $(x, y, z)$ are transmitted to the Flask backend over HTTP, ensuring low latency and total user privacy.
 
 ```mermaid
 flowchart TD
@@ -61,12 +74,14 @@ flowchart TD
 - **Python**: 3.10, 3.11, or 3.12
 - **Node.js**: 18.0 or higher (v22 recommended)
 
-### 1. Clone & Setup Backend
+### 1. Clone the Repository
 ```bash
-# Clone the repository
 git clone https://github.com/Maheredd/Sign-Recognition-System.git
 cd Sign-Recognition-System
+```
 
+### 2. Setup Backend & Virtual Environment
+```bash
 # Create and activate virtual environment (optional but recommended)
 python -m venv venv
 # On Windows:
@@ -78,44 +93,36 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Setup Frontend
+### 3. Setup Frontend
 ```bash
 cd frontend
 npm install
 cd ..
 ```
 
-### 3. Run Everything Together
+### 4. Launch the Application
 ```bash
-# Option A: Universal start command (starts both backend and frontend)
+# Start both backend and frontend concurrently
 npm run dev:all
-
-# Option B: On Windows via Batch Script
-.\start_app.bat
-
-# Option C: In two separate terminal windows
-# Terminal 1:
-python main.py
-# Terminal 2:
-cd frontend && npm run dev
 ```
+*(On Windows, you can also double-click `start_app.bat`)*
 
-Open your browser at **http://localhost:5173**. The backend is accessible at **http://localhost:5000/api/health**.
+Open your browser at **http://localhost:5173**. The backend API will be available at **http://localhost:5000/api/health**.
 
 ---
 
 ## ⚙️ Environment Variables
 
-Configure backend settings via `.env` in the project root:
+Configure backend settings via `.env` in the project root (see `.env.example`):
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
-| `PORT` | `5000` | Port for the Flask application |
+| `PORT` | `5000` | Port for the Flask backend |
 | `HOST` | `0.0.0.0` | Bind host address |
 | `CORS_ORIGINS` | `*` | Allowed CORS origins (comma-separated for specific domains) |
 | `MAX_CONTENT_LENGTH` | `5242880` | Maximum file upload size in bytes (5 MB) |
 | `CONFIDENCE_THRESHOLD` | `0.6` | Threshold below which traffic predictions trigger `low_confidence: true` |
-| `DEBUG` | `false` | Enable Flask debug mode (disabled in production) |
+| `DEBUG` | `false` | Enable Flask debug mode (keep false in production) |
 | `LOG_LEVEL` | `INFO` | Logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
 | `ISL_MODEL_PATH` | `Models/ISLmodel.h5` | Path to trained ISL Keras model |
 | `TRAFFIC_MODEL_PATH` | `Models/gtsrb_cnn_model.h5` | Path to trained GTSRB CNN model |
@@ -124,7 +131,7 @@ Frontend configuration via `frontend/.env`:
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
-| `VITE_API_URL` | `""` (Empty uses Vite dev proxy `/api`) | Full URL of backend API in production deployments |
+| `VITE_API_URL` | `""` (Empty uses Vite dev proxy `/api`) | Target URL of backend API in production environments |
 
 ---
 
@@ -249,7 +256,7 @@ All API endpoints return standard JSON responses with structured HTTP status cod
 | **GTSRB Traffic CNN** | 2-Block CNN + Dropout(0.5) | `(1, 30, 30, 3)` | 43 (Regulatory Signs) | **17.58 ms** | 97.4% |
 | **Hand Gesture** | Orientation-Invariant Angle Engine | 21 3D Points | 10 Gestures | **< 1.0 ms** | Deterministic |
 
-> Latency measured across 50 iterations on an Intel/AMD CPU without GPU acceleration. Both models perform inference in under 20 ms, supporting 50+ predictions per second without runtime quantization.
+> Latency measured across 50 iterations on CPU without GPU acceleration. Both models perform inference in under 20 ms, supporting 50+ predictions per second without quantization.
 
 ---
 
@@ -257,7 +264,7 @@ All API endpoints return standard JSON responses with structured HTTP status cod
 
 1. **Single-Hand Indian Sign Language**: The ISL neural network is trained on 42 wrist-relative coordinate pairs representing a single dominant hand. Complex two-handed sign combinations are not classified by this model.
 2. **GTSRB Classification Scope**: The traffic sign model performs image classification on cropped sign regions, not full object detection across wide-angle street scenes.
-3. **Client-Side Camera Dependency**: Users must grant webcam permissions in the browser to enable Hand and ISL features.
+3. **Client-Side Camera Dependency**: Users must grant webcam permissions in the browser to enable Hand and ISL vision features.
 
 ---
 
@@ -285,6 +292,9 @@ npm run lint:frontend
 
 # Frontend Production Bundle Build
 npm run build:frontend
+
+# Run all verification checks together
+npm run test:all
 ```
 
 ---
