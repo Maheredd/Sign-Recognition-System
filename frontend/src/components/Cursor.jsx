@@ -1,71 +1,94 @@
-import React, { useEffect, useRef } from 'react';
-import css from '../index.css?inline'; // Ensure styles are loaded if not global
+import React, { useEffect, useRef, useState } from 'react';
 
 const Cursor = () => {
-    const cursorDotRef = useRef(null);
-    const cursorOutlineRef = useRef(null);
+  const cursorDotRef = useRef(null);
+  const cursorOutlineRef = useRef(null);
+  const [isTouchDevice] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(pointer: coarse)').matches || !window.matchMedia('(hover: hover)').matches;
+  });
 
-    useEffect(() => {
-        const cursorDot = cursorDotRef.current;
-        const cursorOutline = cursorOutlineRef.current;
+  useEffect(() => {
+    if (isTouchDevice) {
+      return;
+    }
 
-        if (!cursorDot || !cursorOutline) return;
+    const cursorDot = cursorDotRef.current;
+    const cursorOutline = cursorOutlineRef.current;
+    if (!cursorDot || !cursorOutline) return;
 
-        const moveCursor = (e) => {
-            const { clientX, clientY } = e;
+    let mouseX = -100;
+    let mouseY = -100;
+    let outlineX = -100;
+    let outlineY = -100;
+    let animationFrameId = null;
 
-            // Direct movement for the dot
-            cursorDot.style.left = `${clientX}px`;
-            cursorDot.style.top = `${clientY}px`;
+    const onMouseMove = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursorDot.style.left = `${mouseX}px`;
+      cursorDot.style.top = `${mouseY}px`;
+    };
 
-            // Smooth movement for the outline (using animate to avoid jank if possible, or simple trailing)
-            cursorOutline.animate({
-                left: `${clientX}px`,
-                top: `${clientY}px`
-            }, { duration: 500, fill: "forwards" });
-        };
+    // Smooth lerp trailing animation loop for the outline
+    const animate = () => {
+      outlineX += (mouseX - outlineX) * 0.18;
+      outlineY += (mouseY - outlineY) * 0.18;
+      cursorOutline.style.left = `${outlineX}px`;
+      cursorOutline.style.top = `${outlineY}px`;
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animationFrameId = requestAnimationFrame(animate);
 
-        const handleMouseDown = () => {
-            cursorOutline.style.transform = "translate(-50%, -50%) scale(0.8)";
-        };
+    // Event delegation for hover states - zero memory leak, no MutationObserver needed
+    const onPointerOver = (e) => {
+      const target = e.target;
+      if (target && target.closest('a, button, input, textarea, select, [role="button"], .interactive-hover')) {
+        cursorOutline.classList.add('cursor-hover');
+      }
+    };
 
-        const handleMouseUp = () => {
-            cursorOutline.style.transform = "translate(-50%, -50%) scale(1)";
-        };
+    const onPointerOut = (e) => {
+      const target = e.target;
+      if (target && target.closest('a, button, input, textarea, select, [role="button"], .interactive-hover')) {
+        cursorOutline.classList.remove('cursor-hover');
+      }
+    };
 
-        // Add 'hover-active' class to cursor when hovering specific elements
-        const handleLinkHoverEvents = () => {
-            document.querySelectorAll('a, button, input[type="file"], .feature-card').forEach(el => {
-                el.addEventListener('mouseenter', () => cursorOutline.classList.add('cursor-hover'));
-                el.addEventListener('mouseleave', () => cursorOutline.classList.remove('cursor-hover'));
-            });
-        };
+    const onMouseDown = () => {
+      cursorOutline.style.transform = 'translate(-50%, -50%) scale(0.85)';
+    };
 
-        // Initial attach
-        handleLinkHoverEvents();
+    const onMouseUp = () => {
+      cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
+    };
 
-        // Re-attach on mutations (simple observer)
-        const observer = new MutationObserver(handleLinkHoverEvents);
-        observer.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('pointerover', onPointerOver, { passive: true });
+    document.addEventListener('pointerout', onPointerOut, { passive: true });
 
-        window.addEventListener('mousemove', moveCursor);
-        window.addEventListener('mousedown', handleMouseDown);
-        window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('pointerover', onPointerOver);
+      document.removeEventListener('pointerout', onPointerOut);
+    };
+  }, [isTouchDevice]);
 
-        return () => {
-            window.removeEventListener('mousemove', moveCursor);
-            window.removeEventListener('mousedown', handleMouseDown);
-            window.removeEventListener('mouseup', handleMouseUp);
-            observer.disconnect();
-        };
-    }, []);
+  if (isTouchDevice) {
+    return null;
+  }
 
-    return (
-        <>
-            <div ref={cursorDotRef} className="cursor-dot" />
-            <div ref={cursorOutlineRef} className="cursor-outline" />
-        </>
-    );
+  return (
+    <>
+      <div ref={cursorDotRef} className="cursor-dot" aria-hidden="true" />
+      <div ref={cursorOutlineRef} className="cursor-outline" aria-hidden="true" />
+    </>
+  );
 };
 
 export default Cursor;

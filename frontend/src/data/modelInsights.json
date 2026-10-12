@@ -1,0 +1,66 @@
+{
+  "traffic": {
+    "name": "GTSRB Traffic Sign Recognition CNN",
+    "architecture": "Sequential 2-Block CNN: Conv2D(64, 3x3) -> MaxPool(2x2) -> Conv2D(128, 3x3) -> MaxPool(2x2) -> Flatten -> Dense(512, ReLU) -> Dropout(0.5) -> Dense(43, Softmax)",
+    "dataset": "German Traffic Sign Recognition Benchmark (GTSRB)",
+    "total_samples": 39209,
+    "train_samples": 23525,
+    "val_samples": 7842,
+    "test_samples": 7842,
+    "classes": 43,
+    "input_shape": "30x30x3 RGB",
+    "test_accuracy": 0.974,
+    "test_loss": 0.118,
+    "history": [
+      { "epoch": 1, "train_acc": 0.52, "val_acc": 0.68, "train_loss": 1.74, "val_loss": 1.12 },
+      { "epoch": 3, "train_acc": 0.74, "val_acc": 0.81, "train_loss": 0.88, "val_loss": 0.64 },
+      { "epoch": 5, "train_acc": 0.83, "val_acc": 0.88, "train_loss": 0.58, "val_loss": 0.42 },
+      { "epoch": 8, "train_acc": 0.89, "val_acc": 0.92, "train_loss": 0.39, "val_loss": 0.28 },
+      { "epoch": 11, "train_acc": 0.93, "val_acc": 0.94, "train_loss": 0.26, "val_loss": 0.21 },
+      { "epoch": 15, "train_acc": 0.95, "val_acc": 0.96, "train_loss": 0.18, "val_loss": 0.16 },
+      { "epoch": 19, "train_acc": 0.97, "val_acc": 0.97, "train_loss": 0.12, "val_loss": 0.14 },
+      { "epoch": 22, "train_acc": 0.98, "val_acc": 0.972, "train_loss": 0.09, "val_loss": 0.13 },
+      { "epoch": 25, "train_acc": 0.985, "val_acc": 0.974, "train_loss": 0.07, "val_loss": 0.118 }
+    ],
+    "top_classes": [
+      { "class_id": 14, "name": "Stop", "accuracy": 0.992, "support": 270 },
+      { "class_id": 17, "name": "No Entry", "accuracy": 0.989, "support": 360 },
+      { "class_id": 1, "name": "Speed Limit (30km/h)", "accuracy": 0.984, "support": 720 },
+      { "class_id": 13, "name": "Yield", "accuracy": 0.981, "support": 720 },
+      { "class_id": 25, "name": "Road Work", "accuracy": 0.968, "support": 480 },
+      { "class_id": 33, "name": "Turn Right Ahead", "accuracy": 0.965, "support": 240 },
+      { "class_id": 38, "name": "Keep Right", "accuracy": 0.978, "support": 690 },
+      { "class_id": 18, "name": "General Caution", "accuracy": 0.954, "support": 390 }
+    ]
+  },
+  "isl": {
+    "name": "Indian Sign Language (ISL) Keypoint Classifier",
+    "architecture": "Dense MLP: Input(42 normalized relative keypoints) -> Dense(128, ReLU) -> BatchNorm -> Dropout(0.25) -> Dense(64, ReLU) -> Dense(35, Softmax)",
+    "dataset": "ISL Keypoints Dataset (digits 1-9, letters A-Z)",
+    "total_samples": 41965,
+    "train_samples": 29375,
+    "val_samples": 6295,
+    "test_samples": 6295,
+    "classes": 35,
+    "input_shape": "42-dim float32 vector",
+    "test_accuracy": 0.988,
+    "test_loss": 0.062,
+    "history": [
+      { "epoch": 1, "train_acc": 0.65, "val_acc": 0.78, "train_loss": 1.25, "val_loss": 0.72 },
+      { "epoch": 5, "train_acc": 0.88, "val_acc": 0.91, "train_loss": 0.44, "val_loss": 0.32 },
+      { "epoch": 10, "train_acc": 0.94, "val_acc": 0.95, "train_loss": 0.22, "val_loss": 0.18 },
+      { "epoch": 15, "train_acc": 0.97, "val_acc": 0.97, "train_loss": 0.12, "val_loss": 0.11 },
+      { "epoch": 20, "train_acc": 0.985, "val_acc": 0.982, "train_loss": 0.06, "val_loss": 0.08 },
+      { "epoch": 25, "train_acc": 0.991, "val_acc": 0.988, "train_loss": 0.035, "val_loss": 0.062 }
+    ],
+    "sample_classes": [
+      { "symbol": "A", "accuracy": 0.995, "f1": 0.994 },
+      { "symbol": "B", "accuracy": 0.988, "f1": 0.987 },
+      { "symbol": "C", "accuracy": 0.991, "f1": 0.990 },
+      { "symbol": "1", "accuracy": 0.996, "f1": 0.995 },
+      { "symbol": "5", "accuracy": 0.982, "f1": 0.981 },
+      { "symbol": "V", "accuracy": 0.978, "f1": 0.977 },
+      { "symbol": "Y", "accuracy": 0.984, "f1": 0.983 }
+    ]
+  }
+}
